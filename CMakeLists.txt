@@ -11,13 +11,7 @@ set(VERSION ${GLIB_MAJOR_VERSION}.${GLIB_MINOR_VERSION}.${GLIB_PATCH_LEVEL})
 
 project(glib VERSION ${VERSION})
 
-#find_package(X11)
-#find_package(ZLIB REQUIRED)
-#find_package(Threads REQUIRED)
-#find_package(Fontconfig REQUIRED)
-#find_package(Freetype REQUIRED)
-#find_package(PNG REQUIRED)
-#find_package(TIFF REQUIRED)
+find_package(Threads REQUIRED)
 
 include(CheckTypeSize)
 include(CheckIncludeFile)

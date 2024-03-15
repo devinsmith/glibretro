@@ -44,14 +44,9 @@ set(CMAKE_INSTALL_LIBDIR "lib" CACHE STRING "Specify the name of the directory w
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
-#set(LIBS ZLIB::ZLIB Fontconfig::Fontconfig ${CMAKE_THREAD_LIBS_INIT} Freetype::Freetype PNG::PNG
-#  ${X11_LIBRARIES} X11::Xcursor TIFF::TIFF)
+set(LIBS ${CMAKE_THREAD_LIBS_INIT})
 
-#if (${X11_Xi_FOUND})
-#  list(APPEND LIBS X11::Xi)
-#endif()
-
-#target_link_libraries(${PROJECT_NAME} ${LIBS})
+target_link_libraries(${PROJECT_NAME} ${LIBS})
 
 
 add_compile_definitions(HAVE_CONFIG_H)
