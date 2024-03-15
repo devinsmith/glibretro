@@ -1,0 +1,15 @@
+#define SIZEOF_CHAR @SIZEOF_CHAR@
+#define SIZEOF_INT @SIZEOF_INT@
+#define SIZEOF_LONG @SIZEOF_LONG@
+#define SIZEOF_LONGLONG @SIZEOF_LONG_LONG@
+#define SIZEOF_SHORT @SIZEOF_SHORT@
+#define SIZEOF_VOID_P @SIZEOF_VOID_P@
+
+#define GLIB_INTERFACE_AGE @GLIB_PATCH_LEVEL@
+#define GLIB_BINARY_AGE @GLIB_PATCH_LEVEL@
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#cmakedefine HAVE_UNISTD_H 1
+
+/* Define to 1 if you have atexit sytem function */
+#cmakedefine HAVE_ATEXIT 1
