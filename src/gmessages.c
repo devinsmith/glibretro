@@ -409,6 +409,15 @@ g_log (const gchar    *log_domain,
   va_end (args);
 }
 
+/* Adopted from glib 2 */
+static void write_string(gint fd, const char *str, size_t len)
+{
+  if (write(fd, str, len) != len) {
+    /* Something failed, but it's not an error we can handle at glib level
+     * so let's just continue without the compiler blaming us */
+  }
+}
+
 void
 g_log_default_handler (const gchar    *log_domain,
 		       GLogLevelFlags  log_level,
@@ -421,7 +430,7 @@ g_log_default_handler (const gchar    *log_domain,
   gint fd;
 #endif
   gboolean in_recursion;
-  gboolean is_fatal;  
+  gboolean is_fatal;
   GErrorFunc     local_glib_error_func;
   GWarningFunc   local_glib_warning_func;
   GPrintFunc     local_glib_message_func;
@@ -429,10 +438,10 @@ g_log_default_handler (const gchar    *log_domain,
   in_recursion = (log_level & G_LOG_FLAG_RECURSION) != 0;
   is_fatal = (log_level & G_LOG_FLAG_FATAL) != 0;
   log_level &= G_LOG_LEVEL_MASK;
-  
+
   if (!message)
     message = "g_log_default_handler(): (NULL) message";
-  
+
 #ifdef NATIVE_WIN32
   /* Use just stdout as stderr is hard to get redirected from the
    * DOS prompt.
@@ -441,7 +450,7 @@ g_log_default_handler (const gchar    *log_domain,
 #else
   fd = (log_level >= G_LOG_LEVEL_MESSAGE) ? 1 : 2;
 #endif
-  
+
   g_mutex_lock (g_messages_lock);
   local_glib_error_func = glib_error_func;
   local_glib_warning_func = glib_warning_func;
@@ -459,43 +468,43 @@ g_log_default_handler (const gchar    *log_domain,
 	}
       /* use write(2) for output, in case we are out of memeory */
       ensure_stdout_valid ();
-      if (log_domain)
+  if (log_domain)
 	{
-	  write (fd, "\n", 1);
-	  write (fd, log_domain, strlen (log_domain));
-	  write (fd, "-", 1);
+	  write_string(fd, "\n", 1);
+	  write_string(fd, log_domain, strlen (log_domain));
+	  write_string(fd, "-", 1);
 	}
       else
-	write (fd, "\n** ", 4);
+	write_string(fd, "\n** ", 4);
       if (in_recursion)
-	write (fd, "ERROR (recursed) **: ", 21);
+	write_string(fd, "ERROR (recursed) **: ", 21);
       else
-	write (fd, "ERROR **: ", 10);
-      write (fd, message, strlen(message));
+	write_string(fd, "ERROR **: ", 10);
+      write_string(fd, message, strlen(message));
       if (is_fatal)
-	write (fd, "\naborting...\n", 13);
+	write_string(fd, "\naborting...\n", 13);
       else
-	write (fd, "\n", 1);
+	write_string(fd, "\n", 1);
       break;
     case G_LOG_LEVEL_CRITICAL:
       ensure_stdout_valid ();
       if (log_domain)
 	{
-	  write (fd, "\n", 1);
-	  write (fd, log_domain, strlen (log_domain));
-	  write (fd, "-", 1);
+	  write_string(fd, "\n", 1);
+	  write_string(fd, log_domain, strlen (log_domain));
+	  write_string(fd, "-", 1);
 	}
       else
-	write (fd, "\n** ", 4);
+	write_string(fd, "\n** ", 4);
       if (in_recursion)
-	write (fd, "CRITICAL (recursed) **: ", 24);
+	write_string(fd, "CRITICAL (recursed) **: ", 24);
       else
-	write (fd, "CRITICAL **: ", 13);
-      write (fd, message, strlen(message));
+	write_string(fd, "CRITICAL **: ", 13);
+      write_string(fd, message, strlen(message));
       if (is_fatal)
-	write (fd, "\naborting...\n", 13);
+	write_string(fd, "\naborting...\n", 13);
       else
-	write (fd, "\n", 1);
+	write_string(fd, "\n", 1);
       break;
     case G_LOG_LEVEL_WARNING:
       if (!log_domain && local_glib_warning_func)
@@ -507,21 +516,21 @@ g_log_default_handler (const gchar    *log_domain,
       ensure_stdout_valid ();
       if (log_domain)
 	{
-	  write (fd, "\n", 1);
-	  write (fd, log_domain, strlen (log_domain));
-	  write (fd, "-", 1);
+	  write_string(fd, "\n", 1);
+	  write_string(fd, log_domain, strlen (log_domain));
+	  write_string(fd, "-", 1);
 	}
       else
-	write (fd, "\n** ", 4);
+	write_string(fd, "\n** ", 4);
       if (in_recursion)
-	write (fd, "WARNING (recursed) **: ", 23);
+	write_string(fd, "WARNING (recursed) **: ", 23);
       else
-	write (fd, "WARNING **: ", 12);
-      write (fd, message, strlen(message));
+	write_string(fd, "WARNING **: ", 12);
+      write_string(fd, message, strlen(message));
       if (is_fatal)
-	write (fd, "\naborting...\n", 13);
+	write_string(fd, "\naborting...\n", 13);
       else
-	write (fd, "\n", 1);
+	write_string(fd, "\n", 1);
       break;
     case G_LOG_LEVEL_MESSAGE:
       if (!log_domain && local_glib_message_func)
@@ -533,52 +542,52 @@ g_log_default_handler (const gchar    *log_domain,
       ensure_stdout_valid ();
       if (log_domain)
 	{
-	  write (fd, log_domain, strlen (log_domain));
-	  write (fd, "-", 1);
+	  write_string(fd, log_domain, strlen (log_domain));
+	  write_string(fd, "-", 1);
 	}
       if (in_recursion)
-	write (fd, "Message (recursed): ", 20);
+	write_string(fd, "Message (recursed): ", 20);
       else
-	write (fd, "Message: ", 9);
-      write (fd, message, strlen(message));
+	write_string(fd, "Message: ", 9);
+      write_string(fd, message, strlen(message));
       if (is_fatal)
-	write (fd, "\naborting...\n", 13);
+	write_string(fd, "\naborting...\n", 13);
       else
-	write (fd, "\n", 1);
+	write_string(fd, "\n", 1);
       break;
     case G_LOG_LEVEL_INFO:
       ensure_stdout_valid ();
       if (log_domain)
 	{
-	  write (fd, log_domain, strlen (log_domain));
-	  write (fd, "-", 1);
+	  write_string(fd, log_domain, strlen (log_domain));
+	  write_string(fd, "-", 1);
 	}
       if (in_recursion)
-	write (fd, "INFO (recursed): ", 17);
+	write_string(fd, "INFO (recursed): ", 17);
       else
-	write (fd, "INFO: ", 6);
-      write (fd, message, strlen(message));
+	write_string(fd, "INFO: ", 6);
+      write_string(fd, message, strlen(message));
       if (is_fatal)
-	write (fd, "\naborting...\n", 13);
+	write_string(fd, "\naborting...\n", 13);
       else
-	write (fd, "\n", 1);
+	write_string(fd, "\n", 1);
       break;
     case G_LOG_LEVEL_DEBUG:
       ensure_stdout_valid ();
       if (log_domain)
 	{
-	  write (fd, log_domain, strlen (log_domain));
-	  write (fd, "-", 1);
+	  write_string(fd, log_domain, strlen (log_domain));
+	  write_string(fd, "-", 1);
 	}
       if (in_recursion)
-	write (fd, "DEBUG (recursed): ", 18);
+	write_string(fd, "DEBUG (recursed): ", 18);
       else
-	write (fd, "DEBUG: ", 7);
-      write (fd, message, strlen(message));
+	write_string(fd, "DEBUG: ", 7);
+      write_string(fd, message, strlen(message));
       if (is_fatal)
-	write (fd, "\naborting...\n", 13);
+	write_string(fd, "\naborting...\n", 13);
       else
-	write (fd, "\n", 1);
+	write_string(fd, "\n", 1);
       break;
     default:
       /* we are used for a log level that is not defined by GLib itself,
@@ -587,16 +596,16 @@ g_log_default_handler (const gchar    *log_domain,
       ensure_stdout_valid ();
       if (log_domain)
 	{
-	  write (fd, log_domain, strlen (log_domain));
+	  write_string(fd, log_domain, strlen (log_domain));
 	  if (in_recursion)
-	    write (fd, "-LOG (recursed:", 15);
+	    write_string(fd, "-LOG (recursed:", 15);
 	  else
-	    write (fd, "-LOG (", 6);
+	    write_string(fd, "-LOG (", 6);
 	}
       else if (in_recursion)
-	write (fd, "LOG (recursed:", 14);
+	write_string(fd, "LOG (recursed:", 14);
       else
-	write (fd, "LOG (", 5);
+	write_string(fd, "LOG (", 5);
       if (log_level)
 	{
 	  gchar string[] = "0x00): ";
@@ -610,15 +619,15 @@ g_log_default_handler (const gchar    *log_domain,
 	  if (*p > '9')
 	    *p += 'A' - '9' - 1;
 	  
-	  write (fd, string, 7);
+	  write_string(fd, string, 7);
 	}
       else
-	write (fd, "): ", 3);
-      write (fd, message, strlen(message));
+	write_string(fd, "): ", 3);
+      write_string(fd, message, strlen(message));
       if (is_fatal)
-	write (fd, "\naborting...\n", 13);
+	write_string(fd, "\naborting...\n", 13);
       else
-	write (fd, "\n", 1);
+	write_string(fd, "\n", 1);
       break;
     }
 }
