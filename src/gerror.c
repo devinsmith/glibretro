@@ -111,14 +111,19 @@ g_on_error_query (const gchar *prg_name)
 	     query1,
 	     query3);
   fflush (stdout);
-  
+
 #ifndef NATIVE_WIN32
-  if (isatty(0) && isatty(1))
-    fgets (buf, 8, stdin); 
+  if (isatty(0) && isatty(1)) {
+    char *ret = fgets (buf, 8, stdin);
+    if (ret == NULL) {
+      /* Oh well */
+      return;
+    }
+  }
   else
     strncpy (buf, "E\n", sizeof(buf));
 #else
-  fgets (buf, 8, stdin); 
+  fgets (buf, 8, stdin);
 #endif
 
   if ((buf[0] == 'E' || buf[0] == 'e')
@@ -216,9 +221,26 @@ stack_trace (char **args)
   pid = fork ();
   if (pid == 0)
     {
-      close (0); dup (in_fd[0]);   /* set the stdin to the in pipe */
-      close (1); dup (out_fd[1]);  /* set the stdout to the out pipe */
-      close (2); dup (out_fd[1]);  /* set the stderr to the out pipe */
+      /* set the stdin to the in pipe */
+      close (0);
+      if (dup (in_fd[0]) == -1) {
+        perror("unable to dup stdin");
+        _exit(0);
+      }
+
+      /* set the stdout to the out pipe */
+      close (1);
+      if (dup (out_fd[1]) == -1) {
+        perror("unable to dup stdout");
+        _exit(0);
+      }
+
+      /* set the stderr to the out pipe */
+      close (2);
+      if (dup (out_fd[1]) == -1) {
+        perror("unable to dup stderr");
+        _exit(0);
+      }
 
       execvp (args[0], args);      /* exec gdb */
       perror ("exec failed");
@@ -233,9 +255,19 @@ stack_trace (char **args)
   FD_ZERO (&fdset);
   FD_SET (out_fd[0], &fdset);
 
-  write (in_fd[1], "backtrace\n", 10);
-  write (in_fd[1], "p x = 0\n", 8);
-  write (in_fd[1], "quit\n", 5);
+  if (write (in_fd[1], "backtrace\n", 10) == -1) {
+      perror("unable to write to dup stdin");
+      _exit(0);
+  }
+  if (write (in_fd[1], "p x = 0\n", 8) == -1) {
+      perror("unable to write to dup stdin");
+      _exit(0);
+  }
+
+  if (write (in_fd[1], "quit\n", 5) == -1) {
+      perror("unable to write to dup stdin");
+      _exit(0);
+  }
 
   index = 0;
   state = 0;
