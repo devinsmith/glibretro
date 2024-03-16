@@ -2,7 +2,15 @@
 
 A fork of glib 1.2.10, mostly for retro projects, using CMake on modern systems.
 
-Probably only works on Linux and POSIX based systems. Requires at least a C89 compiler.
+The original glib 1.x targeted many different platforms. In order to reduce
+the maintenance burden, support for anything non-Posix has been removed. This
+means there is very little configuration support for checking for the presence
+of basic headers like string.h, sys/time.h, etc. The build currently assumes
+they exist. As such this fork is likely to only compile and work on Linux and
+BSD systems. It currently also requires a C89 or higher compiler.
+
+This fork compiles gthread (pthread) and gmodule (libdl) directly into the
+glib library.
 
 # Dependencies
 
