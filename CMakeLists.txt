@@ -1,6 +1,7 @@
 # glib 1.2x library build system
 
 # The minimum version is the version supported by the oldest Debian release
+# Ubuntu 20.04LTS uses 3.16.3
 cmake_minimum_required(VERSION 3.13.4)
 
 #set(CMAKE_VERBOSE_MAKEFILE TRUE)
