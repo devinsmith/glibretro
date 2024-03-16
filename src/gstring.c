@@ -376,11 +376,11 @@ g_string_insert (GString     *fstring,
   g_return_val_if_fail (pos <= string->len, fstring);
 
   len = strlen (val);
-  g_string_maybe_expand (string, len);
+  g_string_maybe_expand (string, len + 1);
 
   g_memmove (string->str + pos + len, string->str + pos, string->len - pos);
 
-  strncpy (string->str + pos, val, len);
+  strncpy (string->str + pos, val, len + 1);
 
   string->len += len;
 
