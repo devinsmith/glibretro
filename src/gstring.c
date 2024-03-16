@@ -329,11 +329,11 @@ g_string_prepend (GString *fstring,
   g_return_val_if_fail (val != NULL, fstring);
 
   len = strlen (val);
-  g_string_maybe_expand (string, len);
+  g_string_maybe_expand (string, len + 1);
 
   g_memmove (string->str + len, string->str, string->len);
 
-  strncpy (string->str, val, len);
+  strncpy (string->str, val, len + 1);
 
   string->len += len;
 
