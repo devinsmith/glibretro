@@ -50,6 +50,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif /* HAVE_UNISTD_H */
+#include <stdio.h>
 #include <errno.h>
 
 #ifdef NATIVE_WIN32
