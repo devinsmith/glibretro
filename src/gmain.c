@@ -1074,7 +1074,9 @@ g_main_poll (gint     timeout,
     {
 #ifndef NATIVE_WIN32
       gchar c;
-      read (wake_up_pipe[0], &c, 1);
+      if (read (wake_up_pipe[0], &c, 1) == -1) {
+        perror("Failed to read from wake_up_pipe");
+      }
 #endif
     }
   else
@@ -1218,17 +1220,12 @@ g_main_set_poll_func (GPollFunc func)
 static void
 g_main_wakeup (void)
 {
-#ifdef G_THREADS_ENABLED
-  if (poll_waiting)
-    {
-      poll_waiting = FALSE;
-#ifndef NATIVE_WIN32
-      write (wake_up_pipe[1], "A", 1);
-#else
-      ReleaseSemaphore (wake_up_semaphore, 1, NULL);
-#endif
+  if (poll_waiting) {
+    poll_waiting = FALSE;
+    if (write(wake_up_pipe[1], "A", 1) == -1) {
+      perror("Failed to write to wake_up_pipe");
     }
-#endif
+  }
 }
 
 /* Timeouts */
