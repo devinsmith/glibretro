@@ -7,14 +7,54 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  build-ubuntu-lts:
-    runs-on: ubuntu-20.04
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+            name: "Ubuntu 22.04 LTS",
+            os: "ubuntu-22.04",
+            build_type: "Release",
+            cc: "gcc",
+            cxx: "g++",
+            generators: "Unix Makefiles",
+            archiver: "tar czf",
+            artifact: "ubuntu_gcc.tar.gz"
+          }
+        - {
+            name: "MacOS Latest Clang",
+            os: "macos-latest",
+            build_type: "Release",
+            cc: "clang",
+            cxx: "clang++",
+            generators: "Unix Makefiles",
+            archiver: "tar czf",
+            artifact: "macos_clang.tar.gz"
+          }
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
-    - name: Update to latest
-      run: sudo apt update
+    - name: Print env
+      run: |
+        echo github.event.action: ${{ github.event.action }}
+        echo github.event_name: ${{ github.event_name }}
+
+    - name: Install dependencies on Ubuntu
+      if: startsWith(matrix.config.name, 'Ubuntu')
+      run: |
+        sudo apt update
+        cmake --version
+        gcc --version
+
+    - name: Install dependencies on MacOS
+      if: startsWith(matrix.config.os, 'macos')
+      run: |
+        cmake --version
+        clang --version
 
     - name: Create Build Environment
       # Some projects don't allow in-source building, so create a separate build directory
