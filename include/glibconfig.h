@@ -60,7 +60,7 @@ G_GNUC_EXTENSION typedef unsigned long long guint64;
 # define g_ATEXIT(proc)	(atexit (proc))
 #endif
 
-#define g_memmove(d,s,n) G_STMT_START { memmove ((d), (s), (n)); } G_STMT_END
+#define g_memmove(d,s,n) do { memmove ((d), (s), (n)); } while(0);
 
 #define GLIB_MAJOR_VERSION 1
 #define GLIB_MINOR_VERSION 2
