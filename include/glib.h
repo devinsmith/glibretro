@@ -230,8 +230,8 @@ extern "C" {
  */
 #if !(defined (G_STMT_START) && defined (G_STMT_END))
 #  if defined (__GNUC__) && !defined (__STRICT_ANSI__) && !defined (__cplusplus)
-#    define G_STMT_START	(void)(
-#    define G_STMT_END		)
+#    define G_STMT_START	do
+#    define G_STMT_END		while (0)
 #  else
 #    if (defined (sun) || defined (__sun__))
 #      define G_STMT_START	if (1)
