@@ -284,11 +284,7 @@ extern "C" {
  * not defined, but use is actually abandoned. people should
  * use g_atexit() instead.
  */
-#ifndef ATEXIT
-# define ATEXIT(proc)	g_ATEXIT(proc)
-#else
 # define G_NATIVE_ATEXIT
-#endif /* ATEXIT */
 
 /* Hacker macro to place breakpoints for elected machines.
  * Actual use is strongly deprecated of course ;)

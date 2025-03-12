@@ -17,8 +17,6 @@ find_package(Threads REQUIRED)
 include(CheckTypeSize)
 include(CheckIncludeFile)
 
-check_type_size("char" SIZEOF_CHAR)
-check_type_size("int" SIZEOF_INT)
 check_type_size("long" SIZEOF_LONG)
 check_type_size("long long" SIZEOF_LONG_LONG)
 check_type_size("short" SIZEOF_SHORT)
