@@ -4,7 +4,7 @@
 # Ubuntu 20.04LTS uses 3.16.3
 cmake_minimum_required(VERSION 3.13.4)
 
-set(CMAKE_VERBOSE_MAKEFILE TRUE)
+#set(CMAKE_VERBOSE_MAKEFILE TRUE)
 set(GLIB_MAJOR_VERSION 1)
 set(GLIB_MINOR_VERSION 2)
 set(GLIB_PATCH_LEVEL 10)
@@ -21,6 +21,7 @@ check_type_size("long" SIZEOF_LONG)
 check_type_size("void *" SIZEOF_VOID_P)
 
 check_include_file(unistd.h HAVE_UNISTD_H)
+check_include_file(sys/select.h HAVE_SYS_SELECT_H)
 
 configure_file(config.h.in config.h)
 configure_file(glib.pc.in glib.pc @ONLY)
