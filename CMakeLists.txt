@@ -4,7 +4,7 @@
 # Ubuntu 20.04LTS uses 3.16.3
 cmake_minimum_required(VERSION 3.13.4)
 
-#set(CMAKE_VERBOSE_MAKEFILE TRUE)
+set(CMAKE_VERBOSE_MAKEFILE TRUE)
 set(GLIB_MAJOR_VERSION 1)
 set(GLIB_MINOR_VERSION 2)
 set(GLIB_PATCH_LEVEL 10)
@@ -18,8 +18,6 @@ include(CheckTypeSize)
 include(CheckIncludeFile)
 
 check_type_size("long" SIZEOF_LONG)
-check_type_size("long long" SIZEOF_LONG_LONG)
-check_type_size("short" SIZEOF_SHORT)
 check_type_size("void *" SIZEOF_VOID_P)
 
 check_include_file(unistd.h HAVE_UNISTD_H)
@@ -36,9 +34,4 @@ include(CMakePackageConfigHelpers)
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/glib.pc
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
-
-#configure_package_config_file(mlk.cmake.in
-#  ${CMAKE_CURRENT_BINARY_DIR}/mlk.cmake
-#  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mlk
-#  PATH_VARS INCLUDE_INSTALL_DIR SYSCONFIG_INSTALL_DIR)
 
